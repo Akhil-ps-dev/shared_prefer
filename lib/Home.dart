@@ -1,27 +1,50 @@
 import 'package:counter_app/Home2.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Home extends StatelessWidget {
-  const Home({Key? key}) : super(key: key);
+  Home({Key? key}) : super(key: key);
+
+  final _textcontroller = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+    getSavedData(context);
+
     return Scaffold(
-      body: ListView.builder(itemBuilder: (ctx, index) {
-        return ListTile(
-          title: Text("hey ${index}"),
-          onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: ((context) => Home2(
-                      title: "hey ${index} ",
-                    )),
-              ),
-            );
-          },
-        );
-      }),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            TextFormField(
+              controller: _textcontroller,
+            ),
+            ElevatedButton(
+                onPressed: () {
+                  buttonclicked();
+                },
+                child: Text("save")),
+          ],
+        ),
+      ),
     );
+  }
+
+  Future<void> buttonclicked() async {
+    //shared preferences
+    print(_textcontroller.text);
+    final sharedprefer = await SharedPreferences.getInstance();
+
+    sharedprefer.setString('shared_prefer', _textcontroller.text);
+  }
+
+  Future<void> getSavedData(BuildContext ctx) async {
+    //shared preferences
+    final sharedprefer = await SharedPreferences.getInstance();
+    final savedvalue = sharedprefer.getString('shared_prefer');
+    if (savedvalue != null) {
+      Navigator.of(ctx).push(MaterialPageRoute(builder: (ctx) => Home2()));
+    }
   }
 }
 
